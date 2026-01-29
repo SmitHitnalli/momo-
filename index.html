@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>For You 🤍</title>
+
+
+
+<link href="https://fonts.googleapis.com/css2?family=Alice&family=Caveat:wght@400;600&family=Pinyon+Script&family=Quicksand:wght@500;600&display=swap" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
+
+<style>
+
+:root {
+
+  --red: #b11226;
+
+  --pink: #ffccd5;
+
+  --cream: #fffafc;
+
+}
+
+
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; 
+  outline: none;}
+
+
+
+html, body {
+  background-color: #fde8ef;
+  height: 100%;
+
+  width: 100%;
+
+  margin: 0;
+
+  padding: 0;
+
+  overflow: hidden;
+
+  font-family: 'Caveat', cursive;
+
+ 
+
+  background: radial-gradient(circle at center, #ffffff 0%, #fde8ef 100%);
+  transition: background 1.5s ease-in-out;
+
+ 
+
+  /* We keep the subtle animation but on the color itself */
+
+  background-image: none;
+
+}
+
+@keyframes gradientBG {
+
+  0% { background-position: 0% 50%; }
+
+  50% { background-position: 100% 50%; }
+
+  100% { background-position: 0% 50%; }
+
+}
+body::after {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-image: radial-gradient(circle, #fff 1px, transparent 1px);
+  background-size: 50px 50px;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+  animation: driftDust 20s linear infinite;
+}
+
+@keyframes driftDust {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50px); }
+}
+
+
+/* OOPS MESSAGE BOX - Styled like Slide 3 & 4 */
+
+/* OOPS MESSAGE BOX - Identical to Slide 3 & 4 */
+
+#oops-message {
+
+  position: fixed;
+
+  top: 50%;
+
+  left: 50%;
+
+  transform: translate(-50%, -50%) scale(0.9);
+
+  z-index: 4000;
+
+  display: none;
+
+  opacity: 0;
+
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  pointer-events: none;
+
+  /* Matching your .center + transparent-mode styles */
+
+  text-align: center;
+
+  max-width: 320px; width: 80%;
+
+  background: rgba(255, 255, 255, 0.45) !important;
+
+  backdrop-filter: blur(6px);
+
+  padding: 40px 30px; border-radius: 30px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+
+  border: 4px solid rgba(255,255,255,0.8);
+
+}
+
+
+
+/* This makes it pop in smoothly */
+
+#oops-message.show-oops {
+
+  display: block;
+
+  opacity: 1;
+
+  transform: translate(-50%, -50%) scale(1);
+
+}
+
+
+
+#rewatchBtn {
+
+  margin-top: 1.5rem;
+
+  padding: 12px 42px;
+
+  border-radius: 999px;
+
+  background: var(--pink);
+
+  color: #b11226; /* Dark red text for contrast */
+
+  border: none;
+
+  font-family: 'Quicksand', sans-serif;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: transform 0.2s ease;
+
+}
+
+
+
+#rewatchBtn:active {
+
+  transform: scale(0.95);
+
+}
+
+/* THE FLOATING BOWS */
+
+/* THE SMOOTH FLOATING BOWS */
+
+.bow {
+
+  position: fixed; /* Changed from absolute to fixed */
+
+  font-size: 1.5rem;
+
+  opacity: 0.4;
+
+  z-index: 1; /* Behind everything */
+
+  pointer-events: none;
+
+  animation: floatBow 12s linear infinite; /* Slightly slower for less lag */
+
+  top: 100vh; /* Start below the screen */
+
+  transition: transform 0.3s ease-out;
+
+}
+
+
+
+.bow:hover {
+
+  transform: scale(1.5) rotate(20deg);
+
+  opacity: 1;
+
+}
+
+
+
+@keyframes floatBow {
+
+  0% { transform: translateY(0) rotate(0deg) translateX(0); }
+
+  25% { transform: translateY(-25vh) rotate(15deg) translateX(20px); }
+
+  75% { transform: translateY(-75vh) rotate(-15deg) translateX(-20px); }
+
+  100% { transform: translateY(-120vh) rotate(360deg) translateX(0); }
+
+}
+
+/* PHOTO LAYER (Z-INDEX 5) */
+
+#photos {
+  position: fixed; 
+  inset: 0; 
+  pointer-events: none; 
+  overflow : hidden;
+  z-index: 5; /* This is the base layer for all photos */
+}
+
+/* When a photo is zoomed, this container covers everything */
+#photos.dimmed {
+  pointer-events: auto; 
+  z-index: 3000; 
+  background: rgba(0, 0, 0, 0.05); /* Very light dim only */
+  backdrop-filter: none; 
+}
+
+.photo {
+  position: absolute; 
+  width: 140px; 
+  border-radius: 12px; 
+  opacity: 0;
+  filter: drop-shadow(0 8px 15px rgba(0,0,0,0.1));
+  will-change: transform, opacity;
+  /* Remove transform transition from here to keep movement smooth */
+  transition: opacity 1.5s ease, filter 0.8s ease; 
+  z-index: 1;
+  pointer-events: auto;
+  cursor: pointer;
+  left: 0;
+  top: 0; 
+}
+
+/* ZOOMED STATE - Uses top/left 50% for perfect centering */
+
+
+/* Soften other photos when one is clicked */
+#photos.dimmed .photo:not(.focused) {
+  opacity: 0.15;
+  filter: blur(3px) grayscale(0.5);
+}
+
+.photo.focused {
+  z-index: 999999 !important;
+  opacity: 1 !important;
+  filter: blur(0) !important;
+  border: 6px solid white;
+  box-shadow: 
+    0 0 40px 20px rgba(255, 255, 255, 0.9),
+    /* Changed from 0.5 opacity to 0.8 and increased spread */
+    0 0 120px 80px rgba(255, 182, 193, 0.8);
+  border-radius: 15px;
+  /* Keep this transition long and smooth */
+  transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              top 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              left 1.2s cubic-bezier(0.34, 1.56, 0.64, 1), 
+              opacity 0.5s ease !important;
+}
+/* SLIDER LAYER (Z-INDEX 10) */
+
+#slider {
+  display: flex; 
+  width: 600vw; 
+  height: 100vh;
+  transition: transform 1.1s cubic-bezier(.77,0,.175,1);
+  position: relative; 
+  z-index: 10; /* Increased from 10 to 20 to stay above zoomed photos */
+  pointer-events: none; 
+}
+
+
+
+.section {
+  width: 100vw; 
+  height: 100vh; 
+  flex-shrink: 0;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  position: relative; 
+  overflow: hidden;
+  pointer-events: none; /* This was 'auto' before, which was blocking the clicks! */
+}
+
+
+
+/* THE CARDS */
+
+/* THE CARDS - 3D UPGRADE */
+.center {
+  pointer-events: auto;
+  text-align: center;
+  max-width: 380px; 
+  width: 85%;
+  position: relative; 
+  z-index: 100 !important;
+  background: rgba(255, 255, 255, 0.8) !important; /* Slightly transparent */
+  backdrop-filter: blur(12px); /* The magic frosted-glass line */
+  -webkit-backdrop-filter: blur(12px);
+  padding: 40px 30px; 
+  border-radius: 30px;
+  /* 3D Magic starts here */
+  transform-style: preserve-3d;
+  /* Complex shadow: a dark inner layer and a soft outer glow for depth */
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.05), 
+    0 0 25px rgba(255, 182, 193, 0.4), /* Inner soft glow */
+    0 0 50px rgba(255, 182, 193, 0.2); /* Outer wide glow */ 
+  
+  border: 2px solid rgba(255, 204, 213, 0.5);
+  
+  /* Adds a slight tilt effect to make it feel tangible */
+  transform: perspective(1000px) rotateX(2deg) rotateY(-1deg);
+  
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.6s ease,
+              background 1.2s ease,
+              box-shadow 0.5s ease;
+}
+
+/* Hover effect to make it "react" when touched or hovered */
+.center:hover {
+  /* Keeps the 1000px perspective but flattens the rotation and lifts it */
+  transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(-10px) scale(1.02);
+  box-shadow: 
+    0 30px 60px rgba(0, 0, 0, 0.1), 
+    0 0 40px rgba(255, 182, 193, 0.6);
+}
+
+
+.center.transparent-mode {
+
+  background: rgba(255, 255, 255, 0.45);
+
+  backdrop-filter: blur(6px);
+
+}
+.center h1, .center h2, .center p, .center .heart {
+  transform: translateZ(50px); /* Lifts the text off the card */
+  backface-visibility: hidden;
+}
+
+
+
+h1, h2 {
+
+  font-family: 'Pinyon Script', cursive;
+
+  color: var(--red);
+
+  font-size: 3.2rem;
+
+  font-weight: 400;
+
+  line-height: 1;
+
+  margin-bottom: 10px;
+
+  animation: softLanding 1.5s ease-out;
+
+}
+
+h2::after {
+
+  content: '✿'; /* A tiny flower flourish */
+
+  display: block;
+
+  font-size: 1rem;
+
+  opacity: 0.5;
+
+  margin-top: 5px;
+
+}
+
+.signature {
+
+  font-family: 'Pinyon Script', cursive !important;
+
+  font-size: 2rem !important;
+
+  color: var(--red);
+
+  margin-top: 15px;
+
+  display: block;
+
+}
+
+
+
+@keyframes softLanding {
+
+  0% { opacity: 0; transform: translateY(10px); filter: blur(2px); }
+
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+
+}
+
+p, #letter {
+
+  font-family: 'Quicksand', sans-serif;
+
+  font-size: 1.1rem;
+
+  color: #777;
+
+  letter-spacing: 0.5px;
+  max-height: 50vh; 
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE 10+ */
+
+}
+#letter::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+
+
+/* YES BUTTON RINGS */
+
+.btn-wrapper {
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 15px;
+
+  margin-top: 1.5rem;
+
+  position: relative;
+
+}
+
+.btn-ring {
+
+  position: absolute;
+
+  top: 50%;
+
+  left: 50%; /* Anchor to the dead center of the wrapper */
+
+  transform: translate(-50%, -50%);
+
+  /* Increased width to wrap around BOTH buttons + the gap */
+
+  width: 290px;
+
+  height: 65px;
+
+  border: 1px solid var(--pink);
+
+  border-radius: 999px;
+
+  pointer-events: none;
+
+  z-index: 100; /* Behind the buttons */
+
+  animation: wave 3s linear infinite;
+
+  opacity: 0;
+
+}
+
+.ring2 { animation-delay: 1s; }
+
+.ring3 { animation-delay: 2s; }
+
+@keyframes wave {
+
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+
+  100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+
+}
+
+
+
+#yesBtn, #noBtn {
+  width: 130px;
+  height: 50px;
+  border-radius: 999px;
+  background: var(--red);
+  color: white;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 110;
+  box-shadow: 0 4px 15px rgba(177, 18, 38, 0.2);
+  /* This prevents the "growing" bug by ensuring transitions only happen on specific properties */
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease, background 0.2s ease;
+  will-change: transform;
+}
+
+#yesBtn {
+
+  width: 130px; height: 50px; border-radius: 999px;
+
+  background: var(--red); color: white;
+
+  font-family: 'Quicksand', sans-serif; font-weight: 600;
+
+  cursor: pointer; border: none;
+
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
+
+  box-shadow: 0 4px 15px rgba(177, 18, 38, 0.2);
+
+}
+
+#yesBtn:active {
+
+  transform: scale(0.9) !important; /* The 'Haptic' press effect */
+
+}
+
+#yesBtn:active, #noBtn:active {
+
+  transform: scale(0.95);
+
+}
+
+
+
+.heart { position: relative; width: 40px; height: 40px; margin: 1.5rem auto; transform: rotate(-45deg); background: var(--red); animation: pulse 2.4s infinite; }
+
+.heart::before, .heart::after { content:""; position:absolute; width:40px; height:40px; background:var(--red); border-radius:50%; }
+
+.heart::before { top:-20px; left:0; } .heart::after { left:20px; top:0; }
+
+@keyframes pulse { 0%,100% { transform:rotate(-45deg) scale(1); } 50% { transform:rotate(-45deg) scale(1.1); } }
+
+
+
+#teddy {
+
+  animation: teddyFloat 3s ease-in-out infinite;
+
+  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+
+}
+
+
+
+@keyframes teddyFloat {
+
+  0%, 100% { transform: translateY(0) scale(1); }
+
+  50% { transform: translateY(-5px) scale(1.02); }
+
+}
+
+
+
+#final-reveal {
+
+  position: fixed;
+
+  top: -100%;      /* Hidden above */
+
+  left: 0;
+
+  width: 100vw;
+
+  height: 100vh;
+
+  z-index: 2000;  
+
+  background: #fde8ef; /* Matching the main body pink */
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  overflow: hidden; /* Keeps bows inside if needed */
+
+ 
+
+  /* The Landing Animation */
+
+  transition: top 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+
+}
+
+
+
+/* Ensure the card inside matches the styling of other cards */
+
+#final-reveal .center {
+
+  background: rgba(255, 255, 255, 1);
+
+  border: 6px solid rgba(255, 255, 255, 0.8);
+
+  box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+
+}
+
+
+
+#final-reveal.curtain-fall {
+
+  top: 0; /* Drops down */
+
+}
+
+/* 1. Hide everything inside the final reveal initially */
+
+#final-reveal h2,
+
+#final-reveal p,
+
+#final-reveal .heart,
+
+#final-reveal #rewatchBtn {
+
+  opacity: 0 !important; /* Force hidden */
+
+  transform: translateY(20px);
+
+  transition: opacity 1s ease, transform 1s ease;
+
+}
+
+
+
+/* 2. Reveal them when the curtain-fall class is active */
+
+#final-reveal.curtain-fall h2,
+
+#final-reveal.curtain-fall p,
+
+#final-reveal.curtain-fall .heart,
+
+#final-reveal.curtain-fall #rewatchBtn {
+
+  opacity: 1 !important; /* Force visible */
+
+  transform: translateY(0);
+
+}
+
+
+
+/* 3. Staggered timing for that "soft" feel */
+
+#final-reveal.curtain-fall h2 { transition-delay: 1.2s; }
+
+#final-reveal.curtain-fall p  { transition-delay: 1.5s; }
+
+#final-reveal.curtain-fall .heart { transition-delay: 1.8s; }
+
+#final-reveal.curtain-fall #rewatchBtn { transition-delay: 2.1s; }
+
+/* Show text with a delay after curtain falls */
+
+.curtain-fall h2, .curtain-fall p, .curtain-fall .heart {
+
+  opacity: 1;
+
+  transform: translateY(0);
+
+  transition-delay: 1.2s; /* Wait for curtain to land */
+
+}
+
+
+
+/* When the curtain falls, the card does a tiny 'settling' bounce */
+
+.curtain-fall .center {
+
+  animation: landingSettle 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+
+}
+
+
+
+@keyframes landingSettle {
+
+  0% { transform: translateY(-20px) scale(0.95); opacity: 0; }
+
+  60% { transform: translateY(0) scale(1.02); opacity: 1; }
+
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+
+}
+
+.hide-bows #bow-background {
+
+  opacity: 0;
+
+  transition: opacity 1s;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+
+<audio id="bgMusic" src="music.mp3" loop></audio>
+
+<div id="photos"></div>
+
+
+
+<div id="slider">
+
+  <section class="section">
+
+    <div class="center"><h1>Surprise!!</h1><div class="heart"></div><p>Aage swipe kar😘</p></div>
+
+  </section>
+
+
+
+  <section class="section">
+
+    <div class="center"><h2>You're perfect</h2><p>Tere Sath Sab Asaan Lagta Hai</p><p>❤️</p></div>
+
+  </section>
+
+
+
+  <section class="section">
+
+    <div class="center" id="photo-card"><h2>We look so cute together.</h2><p>Espicially Where I'm Picking You Up!</p><p>🥰</p><p>(You can click on the photos!)</p></div>
+
+  </section>
+
+
+
+  <section class="section">
+
+    <div class="center" id="letter-card"><div class="heart"></div><div id="letter"></div></div>
+
+  </section>
+
+
+
+  <section class="section">
+
+    <div class="center">
+
+      <img id="teddy" src="teddy.jpg" style="width:110px; margin-bottom:10px; border-radius: 10px;">
+
+      <h2>Will you be my Valentine?</h2>
+
+      <div class="btn-wrapper" style="position: relative;"> <div class="btn-ring ring1"></div>
+
+  <div class="btn-ring ring2"></div>
+
+  <div class="btn-ring ring3"></div>
+
+ 
+
+  <button id="yesBtn">Yes 🤍</button>
+
+  <button id="noBtn" type="button">No 😔</button>
+
+</div>
+
+    </div>
+
+  </section>
+
+</div>
+
+ <section class="section" id="final-reveal">
+
+  <div style="position:absolute; top:10%; left:10%; font-size:2rem; opacity:0.3;">🎀</div>
+
+  <div style="position:absolute; bottom:15%; right:10%; font-size:2rem; opacity:0.3;">🎀</div>
+
+  <div style="position:absolute; top:40%; right:5%; font-size:1.5rem; opacity:0.2;">🎀</div>
+
+
+
+  <div class="center">
+
+    <h2>You said yes!</h2>
+
+    <p>I Love You So Much Pearl<br>Meri Cutie<br>🤭</p>
+
+    <div class="heart"></div>
+
+    <button id="rewatchBtn">Rewatch</button>
+
+  </div>
+
+</section>
+
+
+
+<div id="oops-message" class="center transparent-mode">
+
+  <div class="heart"></div> <h2 style="font-size: 2rem;">Oye!</h2>
+
+  <p>I think galti se dab gaya<br>Yes left wala button hai 😒</p>
+
+</div>
+
+
+
+<script>
+
+let index=0, startX=0;
+
+const colors = ['#fde8ef', '#fce1e9', '#fddde6', '#fbcad6', '#f9d8e0', '#fde8ef'];
+
+const slider=document.getElementById('slider');
+
+const music=document.getElementById('bgMusic');
+
+const photosDiv=document.getElementById('photos');
+
+let leaves=[], leavesLaunched=false;
+
+
+
+function spawnBows() {
+
+  // We create one container for all bows
+
+  const bowContainer = document.createElement('div');
+
+  bowContainer.id = 'bow-background';
+
+  document.body.appendChild(bowContainer);
+
+
+
+  for(let i = 0; i < 12; i++) { // 12 bows total for a clean look
+
+    const b = document.createElement('div');
+
+    b.className = 'bow';
+
+    b.innerHTML = '🎀';
+
+   
+
+    // Randomize position and timing
+
+    b.style.left = Math.random() * 95 + '%';
+
+    b.style.animationDuration = (10 + Math.random() * 5) + 's';
+
+    b.style.animationDelay = (Math.random() * 10) + 's';
+
+   
+
+    bowContainer.appendChild(b);
+
+  }
+
+}
+
+
+
+// Call it once
+
+spawnBows();
+
+
+
+document.addEventListener('touchstart', e=>{ startX=e.touches[0].clientX; music.play().catch(()=>{}); });
+
+
+
+document.addEventListener('touchend', e=>{
+
+  let dx = e.changedTouches[0].clientX - startX;
+
+
+
+  // Swipe locks (Can't swipe past slide 5)
+
+  if (index === 4 && dx < -50) return;
+
+  if (index === 5) dx = 0;
+
+
+
+  if (dx < -50 && index < 5) index++;
+
+  if (dx > 50 && index > 0) index--;
+
+
+
+  slider.style.transform = `translateX(-${index * 100}vw)`;
+
+  // Change the background color based on the current slide index
+
+  document.body.style.backgroundColor = colors[index];
+
+  document.body.style.transition = 'background-color 1.5s ease-in-out';
+
+
+
+  // Delayed Logic for Photos and Transparency
+
+  if (index === 2 || index === 3) {
+
+    if(index === 2) document.getElementById('photo-card').classList.add('transparent-mode');
+
+    if(index === 3) {
+
+      document.getElementById('letter-card').classList.add('transparent-mode');
+
+      startTyping();
+
+    }
+
+    // Delay photo appearance
+
+    setTimeout(showLeaves, 800);
+
+  } else {
+
+    hideLeaves();
+
+    setTimeout(() => {
+
+      document.getElementById('photo-card').classList.remove('transparent-mode');
+
+      document.getElementById('letter-card').classList.remove('transparent-mode');
+
+    }, 400);
+
+  }
+
+});
+
+
+
+function showLeaves() {
+  if (leavesLaunched) return;
+  leavesLaunched = true;
+
+  for (let i = 1; i <= 8; i++) {
+    const img = document.createElement('img');
+    img.src = `photos/${i}.jpeg`;
+    img.className = 'photo';
+
+    let x = Math.random() * (window.innerWidth - 100);
+    let y = Math.random() * (window.innerHeight - 100);
+    let vx = (Math.random() - 0.5) * 0.6;
+    let vy = -0.5 - Math.random() * 0.5;
+
+    img.onclick = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (img.classList.contains('focused')) return;
+
+  // 1. Capture current state
+  const rect = img.getBoundingClientRect();
+  const currentTransform = window.getComputedStyle(img).transform;
+  
+  // 2. Lock position
+  img.style.position = 'fixed';
+  img.style.top = '0';
+  img.style.left = '0';
+  img.style.width = rect.width + 'px';
+  img.style.transform = currentTransform;
+  img.style.margin = '0';
+
+  document.body.appendChild(img);
+
+  // 3. Zoom In (Unchanged)
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      img.classList.add('focused');
+      img.style.transform = `translate(${window.innerWidth / 2 - rect.width / 2}px, ${window.innerHeight / 2 - rect.height / 2}px) scale(1.3) rotate(0deg)`;
+    });
+  });
+
+  // 4. THE FIX: Fade Out
+  setTimeout(() => {
+    // We remove 'focused' so the CSS !important opacity doesn't block us
+    img.classList.remove('focused');
+    
+    // Manually set the transition and hide it
+    img.style.transition = 'opacity 1s ease-out, transform 1s ease-out';
+    img.style.opacity = '0';
+    img.style.filter = 'blur(10px)'; // Optional: adds a soft exit
+
+    // Delete from the page after fade finishes
+    setTimeout(() => {
+      img.remove();
+    }, 2300); 
+  }, 3000); 
+};
+
+    photosDiv.appendChild(img);
+    leaves.push(img);
+
+    function animate() {
+      // Only move if the user isn't looking closely at it
+      if (!img.classList.contains('focused')) {
+        x += vx;
+        y += vy;
+
+        if (y < -200) {
+          y = window.innerHeight + 100;
+          x = Math.random() * (window.innerWidth - 100);
+        }
+        
+        img.style.transform = `translate(${x}px, ${y}px) rotate(10deg)`;
+      }
+      requestAnimationFrame(animate);
+    }
+    
+    animate();
+    setTimeout(() => { img.style.opacity = 1; }, 100);
+  }
+}
+
+function hideLeaves(){
+
+  leaves.forEach(img => {
+
+    // 1. Tell the photo to start fading and blurring
+
+    img.style.opacity = 0;
+
+    img.style.filter = 'blur(10px)';
+
+   
+
+    // 2. Wait exactly 1.5 seconds (1500ms) for the animation to finish
+
+    setTimeout(() => {
+
+      // Only remove the photo once she can't see it anymore
+
+      img.remove();
+
+    }, 1500);
+
+  });
+
+ 
+
+  // Reset the list and the "launched" flag
+
+  leaves = [];
+
+  leavesLaunched = false;
+
+}
+
+
+
+const letterText=`Pearl, ever since the day I met you, I'm very sure about one thing, you. 
+Even though at times I say other wise, my heart knows It cannot ever let you go. 
+Out of everyone in my life Pearl, you're the one that will get the topmost spot, 
+because you mean so much to me, you bring peace to me(kabhi kabhi annoy karti hai😒). 
+You're perfect pearl, I love you, and I will always do. Jo tu keh rahi hai na "Itne efforts mat le", 
+I will pearl, because I dont care about the efforts I take or the time I put, 
+what I really care about Is the smile on your face when you actually see what I've done and 
+I'm hoping there is a smile behind the screen. 
+Again, I love you Pearl, 
+I'll cherish every moment I spend with you❤️💕. 
+Chal ab aage swipe kar cutie😘`;
+
+
+
+let typed = false;
+
+function startTyping(){
+
+  if(typed) return; typed = true;
+
+  const el = document.getElementById('letter');
+
+  let i = 0;
+
+ 
+
+  (function type(){
+
+    el.textContent += letterText[i++];
+
+    if(i < letterText.length) {
+
+      setTimeout(type, 40 + Math.random() * 40);
+
+    } else {
+
+      // 1. Create the signature element
+
+      const sig = document.createElement('span');
+
+      sig.className = 'signature';
+
+      sig.innerHTML = "<br>I love you 🤍"; // Remember to change [Name]!
+
+      sig.style.opacity = "0";
+
+      sig.style.display = "block";
+
+      sig.style.transition = "opacity 2s ease-in";
+
+      el.appendChild(sig);
+
+     
+
+      // 2. THE DELAY: This waits 750ms (0.75s) after the last letter is typed
+
+      setTimeout(() => {
+
+        sig.style.opacity = "1";
+
+      }, 750);
+
+    }
+
+  })();
+
+
+
+  for(let i=0; i<10; i++) {
+
+    const petal = document.createElement('div');
+
+    petal.innerHTML = '🌸';
+
+    petal.style.position = 'absolute';
+
+    petal.style.left = Math.random() * 100 + '%';
+
+    petal.style.top = '-10%';
+
+    petal.style.opacity = '0.6';
+
+    petal.style.fontSize = '1.2rem';
+
+    petal.style.transition = `transform ${Math.random() * 4 + 4}s linear, opacity 2s`;
+
+    document.getElementById('letter-card').appendChild(petal);
+
+   
+
+    setTimeout(() => {
+
+      petal.style.transform = `translateY(100vh) rotate(${Math.random() * 360}deg)`;
+
+      petal.style.opacity = '0';
+
+    }, 100);
+
+  }
+
+}
+
+
+
+
+
+document.getElementById('yesBtn').onclick = () => {
+  const btn = document.getElementById('yesBtn');
+  
+  // Trigger visual feedback only on THIS button
+  btn.style.transform = "scale(0.9)";
+  
+  setTimeout(() => {
+    const finalSlide = document.getElementById('final-reveal');
+    finalSlide.classList.add('curtain-fall');
+    document.body.classList.add('hide-bows');
+    index = 5;
+
+    // Reset the button scale so it's normal if they click "Rewatch"
+    setTimeout(() => { btn.style.transform = "scale(1)"; }, 500);
+
+    setTimeout(() => {
+      spawnCelebrationConfetti(finalSlide);
+    }, 2300);
+  }, 150); 
+};
+
+
+
+function spawnCelebrationConfetti(container) {
+
+  const icons = ['🌸', '🤍', '✨', '🎀'];
+
+  for(let i=0; i<25; i++) {
+
+    const petal = document.createElement('div');
+
+    petal.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+
+    petal.style.position = 'absolute';
+
+    petal.style.left = Math.random() * 100 + 'vw';
+
+    petal.style.bottom = '-10%'; // Start just below view
+
+    petal.style.fontSize = (Math.random() * 15 + 15) + 'px';
+
+    petal.style.opacity = '0';
+
+    petal.style.zIndex = '2001';
+
+    petal.style.transition = `transform ${Math.random() * 3 + 3}s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 1s`;
+
+   
+
+    container.appendChild(petal);
+
+   
+
+    // Tiny delay to trigger the transition
+
+    setTimeout(() => {
+
+      petal.style.opacity = '0.8';
+
+      petal.style.transform = `translateY(-110vh) translateX(${(Math.random() - 0.5) * 200}px) rotate(${Math.random() * 720}deg)`;
+
+    }, 50);
+
+
+
+    // Clean up to keep the code light
+
+    setTimeout(() => petal.remove(), 6000);
+
+  }
+
+}
+
+
+
+document.getElementById('rewatchBtn').onclick = () => {
+
+  const finalSlide = document.getElementById('final-reveal');
+
+ 
+
+  // 1. Pull the curtain back up
+
+  finalSlide.classList.remove('curtain-fall');
+
+ 
+
+  // 2. Bring back the floating bows
+
+  document.body.classList.remove('hide-bows');
+
+ 
+
+  // 3. Reset the horizontal slider to the first slide
+
+  index = 0;
+
+  slider.style.transform = `translateX(0vw)`;
+
+
+
+  // 4. Clear out the old confetti so it doesn't pile up
+
+  const oldConfetti = finalSlide.querySelectorAll('div:not(.center)');
+
+  oldConfetti.forEach(c => {
+
+    if(c.innerHTML === '🌸' || c.innerHTML === '🤍' || c.innerHTML === '✨' || c.innerHTML === '🎀') {
+
+      c.remove();
+
+    }
+
+  });
+
+};
+
+// This tells the code to listen for a click on the No button
+let noClickCount = 0;
+document.getElementById('noBtn').onclick = () => {
+  noClickCount++;
+  const msg = document.getElementById('oops-message');
+  const p = msg.querySelector('p');
+  
+  if(noClickCount > 1) {
+    p.innerHTML = "Ab zyada ho raha hai... <br> Click YES! 😤";
+  }
+  
+  msg.style.display = 'block';
+  setTimeout(() => msg.classList.add('show-oops'), 500);
+
+  // 1. Show the card and trigger the animation
+
+  msg.style.display = 'block';
+
+  setTimeout(() => msg.classList.add('show-oops'), 500);
+
+ 
+
+  // 2. Stay for 2.5 seconds, then hide
+
+  setTimeout(() => {
+
+    msg.classList.remove('show-oops');
+
+    // Wait for the fade-out to finish before setting display to none
+
+    setTimeout(() => { msg.style.display = 'none'; }, 500);
+
+  }, 2500);
+
+};
+
+</script>
+
+</body>
+
+</html>
+
